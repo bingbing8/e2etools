@@ -9,7 +9,7 @@ spec:
   containers:
   - command: ["/bin/bash"]
     args: ["/tmp/scriptroot/build.sh"]
-    image: golang:1.14
+    image: golang:1.15.0
     name: e2e-builder
     resources: {}
     volumeMounts:
