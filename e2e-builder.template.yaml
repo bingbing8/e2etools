@@ -29,7 +29,8 @@ spec:
   restartPolicy: Never 
   tolerations:
   - effect: NoSchedule
-    key: node-role.kubernetes.io/master
+    operator: "Exists"
+    key: ""
   nodeSelector:
     beta.kubernetes.io/os: linux
 status: {}
