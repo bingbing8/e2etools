@@ -28,8 +28,7 @@ spec:
   dnsPolicy: ClusterFirst
   restartPolicy: Never 
   tolerations:
-  - effect: NoSchedule
-    operator: "Exists"
+  - operator: "Exists"
     key: ""
   nodeSelector:
     beta.kubernetes.io/os: linux
