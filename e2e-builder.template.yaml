@@ -28,8 +28,8 @@ spec:
   dnsPolicy: ClusterFirst
   restartPolicy: Never 
   tolerations:
-  - operator: "Exists"
-    key: ""
+  - effect: NoSchedule
+    key: "node-role.kubernetes.io/master"
   nodeSelector:
     beta.kubernetes.io/os: linux
 status: {}
