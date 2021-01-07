@@ -1,9 +1,3 @@
-export K8S_ROOT=/tmp/private
-export KUBECONFIG=~/.kube/config
-mkdir ${K8S_ROOT}
-cd ${K8S_ROOT}
-git clone https://github.com/bingbing8/e2etools
-cd e2etools
 curl https://k8swin.blob.core.windows.net/k8s-windows/kubetest -o $K8S_ROOT/kubetest
 chmod +x $K8S_ROOT/kubetest
 export KUBE_TEST_REPO_LIST=/tmp/repo_list
