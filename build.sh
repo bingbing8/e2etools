@@ -17,6 +17,7 @@ git clone ${K8S_REPO} ${K8S_SRC_PATH}
 pushd ${K8S_SRC_PATH}
 
 # building e2e bins
+make WHAT=cmd/kubectl
 make WHAT="test/e2e/e2e.test"
 make WHAT="vendor/github.com/onsi/ginkgo/ginkgo"
 
