@@ -49,6 +49,10 @@ if($null -eq (Get-ItemProperty -Path "HKLM:\Software\Microsoft\ContainerPlatform
 {    
     New-ItemProperty -Path "HKLM:\Software\Microsoft\ContainerPlatform" -Name "PackageVersion" -Value "$PackageVersion" -PropertyType String -Force
 }
+else
+{
+    Set-ItemProperty -Path "HKLM:\Software\Microsoft\ContainerPlatform" -Name "PackageVersion" -Value "$PackageVersion" -Force
+}
 
 if($CertPassword)
 {
