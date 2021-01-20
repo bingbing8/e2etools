@@ -13,7 +13,7 @@ spec:
     name: e2e-builder
     env:
     - name: K8S_BRANCH
-      value: ${K8S_BRANCH}
+      value: release-1.20
     resources: {}
     volumeMounts:
     - name: k8s
