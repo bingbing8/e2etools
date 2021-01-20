@@ -19,7 +19,7 @@ then
       git clone ${K8S_REPO} ${K8S_SRC_PATH}
 else
       git clone -b ${K8S_BRANCH} ${K8S_REPO} ${K8S_SRC_PATH}
-
+fi
 
 
 pushd ${K8S_SRC_PATH}
