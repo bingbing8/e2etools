@@ -14,10 +14,12 @@ trap "rm -f ${K8S_SRC_PATH}" ERR
 
 rm -rf ${K8S_SRC_PATH}
 
-if [ -z "$K8S_BRANCH" ]
+if [ -z "${K8S_BRANCH}" ]
 then
+      echo "git clone ${K8S_REPO} ${K8S_SRC_PATH}"
       git clone ${K8S_REPO} ${K8S_SRC_PATH}
 else
+      echo "git clone -b ${K8S_BRANCH} ${K8S_REPO} ${K8S_SRC_PATH}"
       git clone -b ${K8S_BRANCH} ${K8S_REPO} ${K8S_SRC_PATH}
 fi
 
