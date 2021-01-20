@@ -11,6 +11,9 @@ spec:
     args: ["/tmp/scriptroot/build.sh"]
     image: golang:1.15
     name: e2e-builder
+    env:
+    - name: K8S_BRANCH
+      value: ${K8S_BRANCH}
     resources: {}
     volumeMounts:
     - name: k8s
