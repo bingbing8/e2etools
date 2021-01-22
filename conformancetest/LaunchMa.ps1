@@ -76,9 +76,11 @@ $cert = Import-PfxCertificate -FilePath $CertFilePath -CertStoreLocation "Cert:\
         throw "No package geneva monitoring agent found under $GenevaMonitoringAgentPackageFolder"
     }
 }#>
-if(Test-Path "C:\Packages\Plugins\Microsoft.Azure.Geneva.GenevaMonitoring\2.20.0.1\Monitoring\Agent\MonAgentLauncher.exe" -PathType Leaf)
+
+$launcher = Get-ChildItem C:\Packages\Plugins\Microsoft.Azure.Geneva.GenevaMonitoring\*\Monitoring\Agent\MonAgentLauncher.exe -PathType Leaf -Recurse
+if($launcher)
 {
-    & C:\Packages\Plugins\Microsoft.Azure.Geneva.GenevaMonitoring\2.20.0.1\Monitoring\Agent\MonAgentLauncher.exe -useenv
+    & $launcher.FullName -useenv
 }
 else
 {
