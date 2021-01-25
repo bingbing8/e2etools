@@ -1,0 +1,18 @@
+<Tables>
+    <Table name="K8ConformanceTestResults">
+        <Colume name="StartTimeStamp" type ="System.Datetime" />
+        <Colume name="EndTimeStamp" type ="System.Datetime" />
+        <Colume name="ScenarioName" type ="System.String" />
+        <Colume name="PackageVersion" type ="System.String" />
+        <Colume name="KubernetesVersion" type ="System.String" />
+        <Colume name="AgentVMSize" type ="System.String" />
+        <Colume name="AgentWindowsSku" type ="System.String" />
+        <Colume name="Name" type ="System.String" />
+        <Colume name="RuntimeSecond" type ="System.Decimal" />
+        <Colume name="ClassName" type ="System.String" />
+        <Colume name="Status" type ="System.String" />
+        <Colume name="FailureType" type ="System.String" />
+        <Colume name="FailureMessage" type ="System.String" />
+        <Colume name="Output" type ="System.String" />
+    </Table>
+</Tables>
