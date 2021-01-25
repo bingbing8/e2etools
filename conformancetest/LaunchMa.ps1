@@ -80,7 +80,8 @@ $cert = Import-PfxCertificate -FilePath $CertFilePath -CertStoreLocation "Cert:\
 $launcher = Get-ChildItem C:\Packages\Plugins\Microsoft.Azure.Geneva.GenevaMonitoring\*\Monitoring\Agent\MonAgentLauncher.exe -Recurse
 if($launcher)
 {
-    & $launcher.FullName -useenv
+    $last = $launcher.FullName| Select-Object -Last 1
+    & $last -useenv
 }
 else
 {
