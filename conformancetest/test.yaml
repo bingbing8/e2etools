@@ -1,0 +1,115 @@
+parameters:
+  runtime: ''
+  distro: ''
+  platform: ''
+  containerName: ''
+  storageAccountName: ''
+
+jobs:
+- job: ${{ parameters.distro }}_${{ replace(replace(replace(parameters.platform, 'linux/', ''),'windows/', ''), '/', '_') }}_${{ parameters.runtime }}
+  condition: or(eq(variables.DISTRO, ''), eq(variables.DISTRO, '${{ parameters.distro }}'))
+  pool: $(pool)
+  workspace:
+    clean: all
+  continueOnError: true
+  timeoutInMinutes: 120
+  steps:
+    - script: |
+        curl -sSLf https://aka.ms/aks-engine/containerd.tar.gz > aks-engine.tar.gz
+        mkdir -p aks-engine
+        tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
+      displayName: "Download aks-engine"
+
+    - script: |
+        set -x
+        pushd aks-engine
+
+        # Generate SSH keypair
+        echo -e 'y\n' | ssh-keygen -f id_rsa -t rsa -N '' > /dev/null
+        export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
+
+        # Generate resource group name
+        export RESOURCE_GROUP="moby-containerd-e2e-$(openssl rand -hex 3)"
+        echo "##vso[task.setvariable variable=RESOURCE_GROUP]${RESOURCE_GROUP}"
+
+        # grab the package URL from staging storage
+        VERSION=$(cat ../moby-containerd/VERSION)
+        OS="$(echo ${{ parameters.platform }} | cut -d'/' -f1)"
+        echo "##vso[task.setvariable variable=OS]${OS}"
+        ARCH="$(echo ${{ parameters.platform }} | cut -d'/' -f2)"
+
+        # define URLs for custom containerd package for Linux and Windows
+        export LINUX_CONTAINERD_URL="https://${{ parameters.storageAccountName }}.blob.core.windows.net/${{ parameters.containerName }}/moby-containerd/${VERSION}/${{ parameters.distro }}/${OS}_${ARCH}/moby-containerd_${VERSION}-${BUILD_NUMBER:-1}_${ARCH}.deb"
+        export WINDOWS_CONTAINERD_URL="https://${{ parameters.storageAccountName }}.blob.core.windows.net/${{ parameters.containerName }}/moby-containerd/${VERSION}/${{ parameters.distro }}/${OS}_${ARCH}/moby-containerd-${VERSION}-${BUILD_NUMBER:-1}.${ARCH}.zip"
+        export CONTAINER_RUNTIME="${{ parameters.runtime }}"
+
+        envsubst < ../pipelines/templates/api-model/moby-containerd-${OS}-${ARCH}.json > kubernetes.json
+        cat kubernetes.json
+
+        ./aks-engine deploy \
+          --api-model kubernetes.json \
+          --location westus2 \
+          --subscription-id $(SUBSCRIPTION_ID) \
+          --client-id $(AZURE_CLIENT_ID) \
+          --client-secret $(AZURE_CLIENT_SECRET)
+        let ec=$?
+
+        popd
+        exit $ec
+      displayName: "aks-engine deploy"
+      env:
+        AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+
+    - script: |
+        export KUBECONFIG="$(pwd)/aks-engine/_output/${RESOURCE_GROUP}/kubeconfig/kubeconfig.westus2.json"
+        echo "##vso[task.setvariable variable=KUBECONFIG]${KUBECONFIG}"
+
+        # Wait for nodes and pods to become ready
+        kubectl wait --for=condition=ready node --all
+        kubectl wait pod -n kube-system --for=condition=Ready --all
+        kubectl get nodes -owide
+        kubectl cluster-info
+      displayName: "check cluster's health"
+
+    - script: |
+        # set registry for windows test images
+        curl https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/images/image-repo-list -o repo_list
+        KUBE_TEST_REPO_LIST="$(pwd)/repo_list"
+        echo "##vso[task.setvariable variable=KUBE_TEST_REPO_LIST]${KUBE_TEST_REPO_LIST}"
+      condition: eq('${{ parameters.distro }}', 'windows')
+      displayName: "setup test image registry"
+
+    - script: |
+        git clone https://github.com/kubernetes/kubernetes --branch $(kubectl get no -ojson | jq -r ".items[0].status.nodeInfo.kubeletVersion") --single-branch kubernetes
+        pushd kubernetes
+
+        make WHAT=cmd/kubectl
+        make WHAT=test/e2e/e2e.test
+        make ginkgo
+
+        # setting this env prevents ginkg e2e from trying to run provider setup
+        export KUBERNETES_CONFORMANCE_TEST="y"
+        export GINKGO_PARALLEL_NODES="8"
+
+        NODE_OS_DISTRO="linux"
+        GINKGO_SKIP="\\[Serial\\]|\\[Flaky\\]|\\[Slow\\]"
+        if [[ "${OS:-}" == "windows" ]]; then
+          NODE_OS_DISTRO="windows"
+          GINKGO_SKIP+="|\\[LinuxOnly\\]|Guestbook.application.should.create.and.stop.a.working.application"
+        fi
+
+        set -x
+        ./hack/ginkgo-e2e.sh \
+        '--provider=skeleton' \
+        "--ginkgo.focus=\\[Conformance\\]|\\[NodeConformance\\]" "--ginkgo.skip=${GINKGO_SKIP}" \
+        '--disable-log-dump=true' "--node-os-distro=${NODE_OS_DISTRO}"
+      displayName: "run conformance"
+
+    - script: |
+        if [[ -n "${RESOURCE_GROUP:-}" ]]; then
+          az login -u $(AZURE_CLIENT_ID) -p $(AZURE_CLIENT_SECRET) --service-principal --tenant $(TENANT_ID) > /dev/null
+          az account set -s $(SUBSCRIPTION_ID)
+          az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
+        fi
+      displayName: "cleanup"
+      condition: always()
