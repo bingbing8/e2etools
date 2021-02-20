@@ -1,20 +1,22 @@
         helpFunction()
         {
             echo ""
-            echo "Usage: $0 -s subscriptionid -a clientappid -p clientappsecret"
+            echo "Usage: $0 -s subscriptionid -a clientappid -p clientappsecret -t tenantid"
             echo -e "\t-s azure subscription id"
             echo -e "\t-a client application id"
             echo -e "\t-p client secret"
+            echo -e "\t-t tenant id"
             exit 1 # Exit script after printing help
         }
 
-        while getopts "s:a:p:" opt
+        while getopts "s:a:p:t:" opt
         do
         echo "${opt}" "${OPTARG}"
         case "${opt}" in
             s ) subscriptionid=${OPTARG} ;;
             a ) clientappid=${OPTARG} ;;
             p ) clientappsecret=${OPTARG} ;;
+            t ) tenantid=${OPTARG} ;;
             ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
         esac
         done
@@ -85,6 +87,6 @@
         "--ginkgo.focus=\\[Conformance\\]|\\[NodeConformance\\]" "--ginkgo.skip=${GINKGO_SKIP}" \
         '--disable-log-dump=true' "--node-os-distro=${NODE_OS_DISTRO}"
 
-          az login -u $clientappid -p $clientappsecret --service-principal --tenant $(TENANT_ID) > /dev/null
+          az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
           az account set -s $subscriptionid
           az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
