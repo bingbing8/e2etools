@@ -154,7 +154,7 @@ Param (
 
     [int] $NodeCount = 2
 )
-
+Connect-AzAccount -Credential $ServicePrincipalIdAndSecret -Subscription $Subscriptionid 
 $context = Get-AzContext
 
 if($null -eq $context.Account) {
