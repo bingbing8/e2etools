@@ -163,26 +163,6 @@ $ServicePrincipalIdAndSecret = New-Object -TypeName PSCredential -ArgumentList $
 
 Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
 
-$context = Get-AzContext
-
-if($null -eq $context.Account) {
-    $message = "You are not logged into Azure. Please run Connect-AzAccount to log in first."
-    throw $message 
-}
-
-try
-{
-    if($context.Subscription.Id -ine $Subscriptionid )
-    {
-        Set-AzContext -SubscriptionId $Subscriptionid -ErrorAction Stop
-    }
-}
-catch
-{
-    $message =  "Set-AzContext failed. Please make sure you have valid SubscriptionId"
-    throw $message 
-}
-
 $rg = Get-AzResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction Ignore
 if(-not $rg)
 {
