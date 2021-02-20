@@ -75,7 +75,10 @@ Param (
     [string] $ResourceGroupName,
 
     [Parameter(Mandatory = $true)]
-    [PSCredential]$ServicePrincipalIdAndSecret,
+    [string]$ServicePrincipalSecret,
+
+    [Parameter(Mandatory = $true)]
+    [string]$ServicePrincipalId,
 
     [Parameter(Mandatory = $true)]
     [ValidateScript( {
@@ -155,7 +158,11 @@ Param (
     [int] $NodeCount = 2
 )
 
-Connect-AzAccount -Credential $ServicePrincipalIdAndSecret -Subscription $Subscriptionid -Tenant '72f988bf-86f1-41af-91ab-2d7cd011db47' -ServicePrincipal
+$secret = ConvertTo-SecureString -AsPlainText $ServicePrincipalSecret -Force
+$ServicePrincipalIdAndSecret = New-Object -TypeName PSCredential -ArgumentList $ServicePrincipalId, $secret
+
+Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
+
 $context = Get-AzContext
 
 if($null -eq $context.Account) {
