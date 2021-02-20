@@ -51,7 +51,7 @@
           --client-id $clientappid \
           --client-secret $clientappsecret
 
-        export KUBECONFIG="$(pwd)/aks-engine/_output/${RESOURCE_GROUP}/kubeconfig/kubeconfig.westus2.json"
+        export KUBECONFIG="$(pwd)/_output/${RESOURCE_GROUP}/kubeconfig/kubeconfig.westus2.json"
         echo "##vso[task.setvariable variable=KUBECONFIG]${KUBECONFIG}"
 
         # Wait for nodes and pods to become ready
