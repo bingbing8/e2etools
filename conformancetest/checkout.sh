@@ -84,3 +84,7 @@
         '--provider=skeleton' \
         "--ginkgo.focus=\\[Conformance\\]|\\[NodeConformance\\]" "--ginkgo.skip=${GINKGO_SKIP}" \
         '--disable-log-dump=true' "--node-os-distro=${NODE_OS_DISTRO}"
+
+          az login -u $clientappid -p $clientappsecret --service-principal --tenant $(TENANT_ID) > /dev/null
+          az account set -s $subscriptionid
+          az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
