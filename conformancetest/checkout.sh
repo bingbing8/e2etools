@@ -66,3 +66,21 @@
         echo "##vso[task.setvariable variable=KUBE_TEST_REPO_LIST]${KUBE_TEST_REPO_LIST}"
 
         git clone https://github.com/kubernetes/kubernetes --branch $(kubectl get no -ojson | jq -r ".items[0].status.nodeInfo.kubeletVersion") --single-branch kubernetes
+        pushd kubernetes
+
+        make WHAT=cmd/kubectl
+        make WHAT=test/e2e/e2e.test
+        make ginkgo
+
+        # setting this env prevents ginkg e2e from trying to run provider setup
+        export KUBERNETES_CONFORMANCE_TEST="y"
+        export GINKGO_PARALLEL_NODES="8"
+
+        NODE_OS_DISTRO="linux"
+        GINKGO_SKIP="\\[Serial\\]|\\[Flaky\\]|\\[Slow\\]"
+        
+        set -x
+        ./hack/ginkgo-e2e.sh \
+        '--provider=skeleton' \
+        "--ginkgo.focus=\\[Conformance\\]|\\[NodeConformance\\]" "--ginkgo.skip=${GINKGO_SKIP}" \
+        '--disable-log-dump=true' "--node-os-distro=${NODE_OS_DISTRO}"
