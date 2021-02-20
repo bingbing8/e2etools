@@ -157,12 +157,12 @@ Param (
 
     [int] $NodeCount = 2
 )
-Connect-AzAccount 
+
 $secret = ConvertTo-SecureString -AsPlainText $ServicePrincipalSecret -Force
 $ServicePrincipalIdAndSecret = New-Object -TypeName PSCredential -ArgumentList $ServicePrincipalId, $secret
 
 Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
-
+Connect-AzAccount 
 $rg = Get-AzResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction Ignore
 if(-not $rg)
 {
