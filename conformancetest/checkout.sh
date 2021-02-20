@@ -36,7 +36,7 @@
         export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
 
         # Generate resource group name
-        export RESOURCE_GROUP="moby-containerd-e2e"
+        export RESOURCE_GROUP="moby-containerd-e2e-$(openssl rand -hex 3)"
         echo "##vso[task.setvariable variable=RESOURCE_GROUP]${RESOURCE_GROUP}"
 
 
