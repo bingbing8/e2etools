@@ -157,7 +157,7 @@ Param (
 
     [int] $NodeCount = 2
 )
-
+Connect-AzAccount 
 $secret = ConvertTo-SecureString -AsPlainText $ServicePrincipalSecret -Force
 $ServicePrincipalIdAndSecret = New-Object -TypeName PSCredential -ArgumentList $ServicePrincipalId, $secret
 
