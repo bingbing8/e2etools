@@ -35,11 +35,9 @@
         export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
 
         # Generate resource group name
-        export RESOURCE_GROUP="moby-containerd-e2e-$(openssl rand -hex 3)"
+        export RESOURCE_GROUP="k8stest" #-$(openssl rand -hex 3)"
         echo "##vso[task.setvariable variable=RESOURCE_GROUP]${RESOURCE_GROUP}"
 
-
-        #curl https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/job-templates/kubernetes_release_1_20.json > kubernetes_release_1_20.json
 
         ./aks-engine deploy \
           --dns-prefix ${RESOURCE_GROUP} \
@@ -87,6 +85,6 @@
         '--report-dir=/logs ' \
         '--disable-log-dump=true' "--node-os-distro=${NODE_OS_DISTRO}"
         
-          az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
-          az account set -s $subscriptionid
-          az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
+         # az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
+         # az account set -s $subscriptionid
+         # az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
