@@ -23,10 +23,11 @@
 
         # download aks-engine
         curl -sSLf https://github.com/Azure/aks-engine/releases/download/v0.60.1/aks-engine-v0.60.1-linux-amd64.tar.gz > aks-engine.tar.gz
-        #mkdir -p aks-engine
+        mkdir -p aks-engine
         tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
 
         set -x
+        cp kubernetes_release_1_20.json aks-engine/kubernetes_release_1_20.json
         pushd aks-engine
 
         # Generate SSH keypair
