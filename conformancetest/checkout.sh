@@ -36,8 +36,7 @@
         export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
 
         # Generate resource group name
-        export RESOURCE_GROUP="k8stest" 
-        #-$(openssl rand -hex 3)"        
+        export RESOURCE_GROUP="k8stest-$(openssl rand -hex 3)"        
 
 
         ./aks-engine deploy \
