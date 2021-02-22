@@ -21,13 +21,9 @@
         esac
         done
 
-        echo "$subscriptionid"
-        echo "$clientappid"
-        echo "$clientappsecret"
-
         # download aks-engine
         curl -sSLf https://github.com/Azure/aks-engine/releases/download/v0.60.1/aks-engine-v0.60.1-linux-amd64.tar.gz > aks-engine.tar.gz
-        mkdir -p aks-engine
+        #mkdir -p aks-engine
         tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
 
         set -x
@@ -42,7 +38,7 @@
         echo "##vso[task.setvariable variable=RESOURCE_GROUP]${RESOURCE_GROUP}"
 
 
-        curl https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/job-templates/kubernetes_release_1_20.json > kubernetes_release_1_20.json
+        #curl https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/job-templates/kubernetes_release_1_20.json > kubernetes_release_1_20.json
 
         ./aks-engine deploy \
           --dns-prefix ${RESOURCE_GROUP} \
@@ -78,15 +74,18 @@
         export KUBERNETES_CONFORMANCE_TEST="y"
         export GINKGO_PARALLEL_NODES="8"
 
-        NODE_OS_DISTRO="linux"
-        GINKGO_SKIP="\\[Serial\\]|\\[Flaky\\]|\\[Slow\\]"
-        
+        NODE_OS_DISTRO="windows"
+        GINKGO_SKIP+="|\\[LinuxOnly\\]|Guestbook.application.should.create.and.stop.a.working.application"
+        GINKGO_FOCUS="should.run.with.the.expected.status.\\[NodeConformance\\]"
+        mkdir logs
+
         set -x
         ./hack/ginkgo-e2e.sh \
         '--provider=skeleton' \
-        "--ginkgo.focus=\\[Conformance\\]|\\[NodeConformance\\]" "--ginkgo.skip=${GINKGO_SKIP}" \
+        "--ginkgo.focus=${GINKGO_FOCUS}" "--ginkgo.skip=${GINKGO_SKIP}" \
+        '--report-dir=/logs ' \
         '--disable-log-dump=true' "--node-os-distro=${NODE_OS_DISTRO}"
-
+        
           az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
           az account set -s $subscriptionid
           az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
