@@ -29,14 +29,14 @@
         set -x
         cp kubernetes_release_1_20.json aks-engine/kubernetes_release_1_20.json
         pushd aks-engine
-
+        AKS_ENGINE_PATH="$(pwd)"
+  
         # Generate SSH keypair
         echo -e 'y\n' | ssh-keygen -f id_rsa -t rsa -N '' > /dev/null
         export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
 
         # Generate resource group name
-        export RESOURCE_GROUP="k8stest" #-$(openssl rand -hex 3)"
-        echo "##vso[task.setvariable variable=RESOURCE_GROUP]${RESOURCE_GROUP}"
+        export RESOURCE_GROUP="k8stest" #-$(openssl rand -hex 3)"        
 
 
         ./aks-engine deploy \
@@ -57,6 +57,7 @@
         kubectl get nodes -owide
         kubectl cluster-info
 
+        mkdir ${AKS_ENGINE_PATH}/logs
 
         curl https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/images/image-repo-list -o repo_list
         KUBE_TEST_REPO_LIST="$(pwd)/repo_list"
@@ -76,14 +77,16 @@
         NODE_OS_DISTRO="windows"
         GINKGO_SKIP+="|\\[LinuxOnly\\]|Guestbook.application.should.create.and.stop.a.working.application"
         GINKGO_FOCUS="should.run.with.the.expected.status.\\[NodeConformance\\]"
-        mkdir logs
+        
 
         set -x
         ./hack/ginkgo-e2e.sh \
         '--provider=skeleton' \
         "--ginkgo.focus=${GINKGO_FOCUS}" "--ginkgo.skip=${GINKGO_SKIP}" \
-        '--report-dir=/logs ' \
+        "--report-dir=${AKS_ENGINE_PATH}/logs" \
         '--disable-log-dump=true' "--node-os-distro=${NODE_OS_DISTRO}"
+
+        dir logs
         
          # az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
          # az account set -s $subscriptionid
