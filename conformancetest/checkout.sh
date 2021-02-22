@@ -86,7 +86,7 @@
         "--report-dir=${AKS_ENGINE_PATH}/logs" \
         '--disable-log-dump=true' "--node-os-distro=${NODE_OS_DISTRO}"
 
-        dir logs
+        dir ${AKS_ENGINE_PATH}/logs
         
          # az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
          # az account set -s $subscriptionid
