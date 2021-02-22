@@ -88,6 +88,6 @@
 
         dir ${AKS_ENGINE_PATH}/logs
         
-         # az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
-         # az account set -s $subscriptionid
-         # az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
+         az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
+         az account set -s $subscriptionid
+         az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
