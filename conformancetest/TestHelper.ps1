@@ -11,7 +11,7 @@ Param (
     
     [string] $AccountName = "cirruscontainerplat",
 
-    [string] $ContainerName = "containerplat-pkg",
+    [string] $ContainerName = "k8slog",
 
     [string] $AgentVMSize = "Standard_D4s_V3",
 
@@ -78,7 +78,7 @@ $retObj = Get-ChildItem -Filter *junit_*.xml | ForEach-Object {
     }
 }
 
-$OutputFilePath = Join-Path $LogFileDirectory "$($TableName).csv"
+$OutputFilePath = "$($TableName).csv"
 if (Test-Path $OutputFilePath -PathType Leaf) {
     Remove-Item $OutputFilePath -Force
 }
