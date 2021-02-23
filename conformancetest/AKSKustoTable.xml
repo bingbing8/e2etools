@@ -1,5 +1,5 @@
 <Tables>
-    <Table name="K8ConformanceTestResults">
+    <Table name="K8SConformanceTestResults">
         <Colume name="StartTimeStamp" type ="System.Datetime" />
         <Colume name="EndTimeStamp" type ="System.Datetime" />
         <Colume name="ScenarioName" type ="System.String" />
@@ -13,6 +13,7 @@
         <Colume name="Status" type ="System.String" />
         <Colume name="FailureType" type ="System.String" />
         <Colume name="FailureMessage" type ="System.String" />
+        <Colume name="TestInstance" type ="System.Int32" />
         <Colume name="Output" type ="System.String" />
     </Table>
 </Tables>

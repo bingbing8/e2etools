@@ -17,7 +17,7 @@ Param (
 
     [string] $AgentWindowsSku = "Datacenter-Core-2004-with-Containers-smalldisk",
 
-    [string] $TableName = "K8ConformanceTestResults",
+    [string] $TableName = "K8SConformanceTestResults",
 
     [int] $TestInstance = 0
 )
