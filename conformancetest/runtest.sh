@@ -1,13 +1,13 @@
         helpFunction()
         {
             echo ""
-            echo "Usage: $0 -s subscriptionid -a clientappid -p clientappsecret -t tenantid -k kubeversion -i isolation -c storageaccountkey"
+            echo "Usage: $0 -s subscriptionid -a clientappid -p clientappsecret -t tenantid -k kubeversion -o isolation -c storageaccountkey"
             echo -e "\t-s azure subscription id"
             echo -e "\t-a client application id"
-            echo -e "\t-s client secret"
+            echo -e "\t-p client secret"
             echo -e "\t-t tenant id"
             echo -e "\t-k kubernetes version"
-            echo -e "\t-i isolation"
+            echo -e "\t-o isolation"
             echo -e "\t-c storage account key"
             exit 1 # Exit script after printing help
         }
@@ -21,7 +21,7 @@
             p ) clientappsecret=${OPTARG} ;;
             t ) tenantid=${OPTARG} ;;
             k ) kubeversion=${OPTARG} ;;
-            i ) isolation=${OPTARG} ;;
+            o ) isolation=${OPTARG} ;;
             c ) storageaccountkey=${OPTARG} ;;
             ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
         esac
