@@ -35,7 +35,7 @@
 
 	fileversion=${kubeversion//./_}
         
-        cp kubernetes_job_template.json aks-engine/kubernetes_job_template.json
+        cp kubernetes_release_1_20.json aks-engine/kubernetes_release_1_20.json
         pushd aks-engine
         AKS_ENGINE_PATH="$(pwd)"
   
@@ -53,7 +53,7 @@
         ./aks-engine deploy \
           --dns-prefix ${RESOURCE_GROUP} \
           --resource-group ${RESOURCE_GROUP} \
-          --api-model kubernetes_job_template.json \
+          --api-model kubernetes_release_1_20.json \
           --location westus2 \
           --subscription-id $subscriptionid \
           --client-id $clientappid \
