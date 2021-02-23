@@ -1,13 +1,14 @@
         helpFunction()
         {
             echo ""
-            echo "Usage: $0 -s subscriptionid -a clientappid -p clientappsecret -t tenantid -k kubeversion -i isolation"
+            echo "Usage: $0 -s subscriptionid -a clientappid -p clientappsecret -t tenantid -k kubeversion -i isolation -c storageaccountkey"
             echo -e "\t-s azure subscription id"
             echo -e "\t-a client application id"
             echo -e "\t-s client secret"
             echo -e "\t-t tenant id"
             echo -e "\t-k kubernetes version"
             echo -e "\t-i isolation"
+            echo -e "\t-c storage account key"
             exit 1 # Exit script after printing help
         }
 
@@ -21,10 +22,11 @@
             t ) tenantid=${OPTARG} ;;
             k ) kubeversion=${OPTARG} ;;
             i ) isolation=${OPTARG} ;;
+            c ) storageaccountkey=${OPTARG} ;;
             ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
         esac
         done
-
+        set -x
         export kubernetesversion=$kubeversion
         # download aks-engine
         curl -sSLf https://aka.ms/ContainerPlatTest/aks-engine-linux-amd64.tar.gz > aks-engine.tar.gz
@@ -32,7 +34,7 @@
         tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
 
 	fileversion=${kubeversion//./_}
-        set -x
+        
         cp kubernetes_release_$(fileversion).json aks-engine/kubernetes_job_template.json
         pushd aks-engine
         AKS_ENGINE_PATH="$(pwd)"
@@ -43,7 +45,8 @@
 
         # Generate resource group name
         export RESOURCE_GROUP="k8s-${kubernetesversion}-$(isolation)-$(openssl rand -hex 3)"        
-
+        
+        az storage container create -n ${RESOURCE_GROUP} --account-name cirruscontainerplat --account-key $storageaccountkey
 
         ./aks-engine deploy \
           --dns-prefix ${RESOURCE_GROUP} \
@@ -88,8 +91,10 @@
         "--report-dir=${AKS_ENGINE_PATH}/logs" \
         '--disable-log-dump=true' "--node-os-distro=windows"
 
-        dir ${AKS_ENGINE_PATH}/logs
-        
+         dir ${AKS_ENGINE_PATH}/logs
+        az storage blob upload-batch --account-name cirruscontainerplat --account-key $storageaccountkey -d ${RESOURCE_GROUP} -s  ${AKS_ENGINE_PATH}/logs
+        az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${RESOURCE_GROUP} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
+
          az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
          az account set -s $subscriptionid
          az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
