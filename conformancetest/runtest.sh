@@ -27,33 +27,31 @@
         esac
         done
         set -x
-        export kubernetesversion=$kubeversion
+        export Kubernetes_Version=$kubeversion
         # download aks-engine
         curl -sSLf https://aka.ms/ContainerPlatTest/aks-engine-linux-amd64.tar.gz > aks-engine.tar.gz
         mkdir -p aks-engine
         tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
 
-	fileversion=${kubeversion//./_}
-        
-        cp kubernetes_release_1_20.json aks-engine/kubernetes_release_1_20.json
+        export File_Version="${kubeversion//./_}"        
+        cp "kubernetes_release_${File_Version}.json" aks-engine/kubernetes.json
         pushd aks-engine
-        AKS_ENGINE_PATH="$(pwd)"
+        export AKS_ENGINE_PATH="$(pwd)"
   
         # Generate SSH keypair
         echo -e 'y\n' | ssh-keygen -f id_rsa -t rsa -N '' > /dev/null
         export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
 
         # Generate resource group name
-        export RESOURCE_GROUP="k8s-$isolation-$(openssl rand -hex 3)"   
+        export RESOURCE_GROUP="k8s-${File_Version}-$isolation-$(openssl rand -hex 3)"   
         export CONTAINER_NAME="k8yawangstest"        
         
         az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
-        echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
 
         ./aks-engine deploy \
           --dns-prefix ${RESOURCE_GROUP} \
           --resource-group ${RESOURCE_GROUP} \
-          --api-model kubernetes_release_1_20.json \
+          --api-model kubernetes.json \
           --location westus2 \
           --subscription-id $subscriptionid \
           --client-id $clientappid \
@@ -71,7 +69,7 @@
 
         curl https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/images/image-repo-list -o repo_list
         KUBE_TEST_REPO_LIST="$(pwd)/repo_list"
-        git clone https://github.com/kubernetes/kubernetes --branch "release-${kubernetesversion}" --single-branch kubernetes
+        git clone https://github.com/kubernetes/kubernetes --branch "release-${Kubernetes_Version}" --single-branch kubernetes
         pushd kubernetes
 
         make WHAT=cmd/kubectl
@@ -93,10 +91,10 @@
         "--report-dir=${AKS_ENGINE_PATH}/logs" \
         '--disable-log-dump=true' "--node-os-distro=windows"
 
-         dir ${AKS_ENGINE_PATH}/logs
+        dir ${AKS_ENGINE_PATH}/logs
         az storage blob upload-batch --account-name cirruscontainerplat --account-key $storageaccountkey -d ${CONTAINER_NAME} -s  ${AKS_ENGINE_PATH}/logs
         az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
 
-         az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
-         az account set -s $subscriptionid
-         az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
+        az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
+        az account set -s $subscriptionid
+        az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
