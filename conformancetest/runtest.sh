@@ -12,7 +12,7 @@
             exit 1 # Exit script after printing help
         }
 
-        while getopts "s:a:p:t:k:" opt
+        while getopts "s:a:p:t:k:o:c:" opt
         do
         echo "${opt}" "${OPTARG}"
         case "${opt}" in
