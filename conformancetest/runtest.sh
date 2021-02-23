@@ -35,7 +35,7 @@
 
 	fileversion=${kubeversion//./_}
         
-        cp kubernetes_release_$(fileversion).json aks-engine/kubernetes_job_template.json
+        cp kubernetes_job_template.json aks-engine/kubernetes_job_template.json
         pushd aks-engine
         AKS_ENGINE_PATH="$(pwd)"
   
@@ -45,7 +45,7 @@
 
         # Generate resource group name
         export RESOURCE_GROUP="k8s-$isolation-$(openssl rand -hex 3)"   
-        export CONTAINER_NAME = "k8stest"        
+        export CONTAINER_NAME="k8stest"        
         
         az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
         echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
