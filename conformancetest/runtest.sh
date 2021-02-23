@@ -27,7 +27,7 @@
 
         export kubernetesversion=$kubeversion
         # download aks-engine
-        curl -sSLf https://github.com/Azure/aks-engine/releases/download/v0.60.1/aks-engine-v0.60.1-linux-amd64.tar.gz > aks-engine.tar.gz
+        curl -sSLf https://aka.ms/ContainerPlatTest/aks-engine-linux-amd64.tar.gz > aks-engine.tar.gz
         mkdir -p aks-engine
         tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
 
