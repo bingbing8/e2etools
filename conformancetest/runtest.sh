@@ -44,10 +44,11 @@
         export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
 
         # Generate resource group name
-        export RESOURCE_GROUP="k8s-${kubernetesversion}-$(isolation)-$(openssl rand -hex 3)"        
+        export RESOURCE_GROUP="k8s-$isolation-$(openssl rand -hex 3)"   
+        export CONTAINER_NAME = "k8s-$isolation-$(openssl rand -hex 3)"        
         
-        az storage container create -n ${RESOURCE_GROUP} --account-name cirruscontainerplat --account-key $storageaccountkey
-        echo "##vso[task.setvariable variable=logcontainername]${RESOURCE_GROUP}"
+        az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
+        echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
 
         ./aks-engine deploy \
           --dns-prefix ${RESOURCE_GROUP} \
@@ -93,8 +94,8 @@
         '--disable-log-dump=true' "--node-os-distro=windows"
 
          dir ${AKS_ENGINE_PATH}/logs
-        az storage blob upload-batch --account-name cirruscontainerplat --account-key $storageaccountkey -d ${RESOURCE_GROUP} -s  ${AKS_ENGINE_PATH}/logs
-        az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${RESOURCE_GROUP} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
+        az storage blob upload-batch --account-name cirruscontainerplat --account-key $storageaccountkey -d ${CONTAINER_NAME} -s  ${AKS_ENGINE_PATH}/logs
+        az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
 
          az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
          az account set -s $subscriptionid
