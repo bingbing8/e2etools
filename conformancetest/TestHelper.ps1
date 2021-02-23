@@ -17,7 +17,9 @@ Param (
 
     [string] $AgentWindowsSku = "Datacenter-Core-2004-with-Containers-smalldisk",
 
-    [string] $TableName = "K8ConformanceTestResults"
+    [string] $TableName = "K8ConformanceTestResults",
+
+    [int] $TestInstance = 0
 )
 
 az storage blob download-batch -d . --pattern *.xml -s $ContainerName --account-name $AccountName --account-key $AccountKey
@@ -68,7 +70,8 @@ $retObj = Get-ChildItem -Filter *junit_*.xml | ForEach-Object {
             'ClassName'       = $_.classname
             'Status'          = $status
             'FailureType'     = $failureType
-            'FailureMessage'  = $failureMessage
+            'FailureMessage'  = $failureMessage            
+            'TestInstance'    = $TestInstance
             'Output'          = $output
         }
         New-Object -Type PSCustomObject -Property $prop
