@@ -1,11 +1,13 @@
         helpFunction()
         {
             echo ""
-            echo "Usage: $0 -s subscriptionid -a clientappid -p clientappsecret -t tenantid -k kubeversion"
+            echo "Usage: $0 -s subscriptionid -a clientappid -p clientappsecret -t tenantid -k kubeversion -i isolation"
             echo -e "\t-s azure subscription id"
             echo -e "\t-a client application id"
             echo -e "\t-p client secret"
             echo -e "\t-t tenant id"
+            echo -e "\t-k kubernetes version"
+            echo -e "\t-i isolation"
             exit 1 # Exit script after printing help
         }
 
@@ -18,6 +20,7 @@
             p ) clientappsecret=${OPTARG} ;;
             t ) tenantid=${OPTARG} ;;
             k ) kubeversion=${OPTARG} ;;
+            i ) isolation=${OPTARG} ;;
             ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
         esac
         done
@@ -39,7 +42,7 @@
         export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
 
         # Generate resource group name
-        export RESOURCE_GROUP="k8s-${kubernetesversion}-process-$(openssl rand -hex 3)"        
+        export RESOURCE_GROUP="k8s-${kubernetesversion}-$(isolation)-$(openssl rand -hex 3)"        
 
 
         ./aks-engine deploy \
