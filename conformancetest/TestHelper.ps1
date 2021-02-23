@@ -89,7 +89,7 @@ az storage blob upload --account-name $AccountName --account-key $AccountKey --c
 $expiretime = (Get-Date).ToUniversalTime().AddMinutes(180).ToString("yyyy-MM-dTH:mZ")
 $sasurl = az storage blob generate-sas --account-name $AccountName --account-key $AccountKey --container-name $ContainerName --name $TableName --permission r --expiry $expiretime  --full-uri
 echo "##vso[task.setvariable variable=csvlogfileurl]$sasurl"
-
+Write-Host $sasurl
 Write-Host "total: $total"
 Write-Host "Unknown result: $($total-$passedNum-$failedNum-$skippedNum)"
 Write-Host "passed: $passedNum"
