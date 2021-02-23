@@ -47,6 +47,7 @@
         export RESOURCE_GROUP="k8s-${kubernetesversion}-$(isolation)-$(openssl rand -hex 3)"        
         
         az storage container create -n ${RESOURCE_GROUP} --account-name cirruscontainerplat --account-key $storageaccountkey
+        echo "##vso[task.setvariable variable=logcontainername]${RESOURCE_GROUP}"
 
         ./aks-engine deploy \
           --dns-prefix ${RESOURCE_GROUP} \
