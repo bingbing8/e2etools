@@ -83,7 +83,7 @@ if (Test-Path $OutputFilePath -PathType Leaf) {
     Remove-Item $OutputFilePath -Force
 }
 
-$retObj | Export-Csv $OutputFilePath -NoTypeInformation -Force
+$retObj | ConvertTo-Csv -NoTypeInformation | select -Skip 1 | Set-Content $OutputFilePath
       
 az storage blob upload --account-name $AccountName --account-key $AccountKey --container-name $ContainerName --file $OutputFilePath --name $TableName
 $expiretime = (Get-Date).ToUniversalTime().AddMinutes(180).ToString("yyyy-MM-dTH:mZ")
