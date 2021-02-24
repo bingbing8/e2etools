@@ -34,7 +34,6 @@
         tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
 
         export File_Version="${kubeversion//./_}"
-        version_in_name = "${kubeversion | sed 's/.//'}"
         cp "kubernetes_release_${File_Version}.json" aks-engine/kubernetes.json
         pushd aks-engine
         export AKS_ENGINE_PATH="$(pwd)"
@@ -44,9 +43,9 @@
         export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
 
         # Generate resource group name
-        export RESOURCE_GROUP="k8s-120-$isolation-$(openssl rand -hex 3)"   
-        export CONTAINER_NAME="k8yawangstest"        
-        echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
+        export RESOURCE_GROUP="k8s-${kubeversion//.}-$isolation-$(openssl rand -hex 3)"   
+        export CONTAINER_NAME="k8stest"        
+        
         az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
 
         ./aks-engine deploy \
@@ -81,7 +80,7 @@
         export KUBERNETES_CONFORMANCE_TEST="y"
         export GINKGO_PARALLEL_NODES="2"
 
-        GINKGO_SKIP+="|\\[LinuxOnly\\]|Guestbook.application.should.create.and.stop.a.working.application"
+        GINKGO_SKIP="\\[LinuxOnly\\]|\\[Serial\\]|GMSA|Guestbook.application.should.create.and.stop.a.working.application"
         GINKGO_FOCUS="should.run.with.the.expected.status.\\[NodeConformance\\]"
         
 
