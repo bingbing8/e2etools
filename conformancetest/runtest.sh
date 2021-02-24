@@ -33,7 +33,8 @@
         mkdir -p aks-engine
         tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
 
-        export File_Version="${kubeversion//./_}"        
+        export File_Version="${kubeversion//./_}"
+        version_in_name = "${kubeversion | sed 's/.//'}"
         cp "kubernetes_release_${File_Version}.json" aks-engine/kubernetes.json
         pushd aks-engine
         export AKS_ENGINE_PATH="$(pwd)"
@@ -43,7 +44,7 @@
         export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
 
         # Generate resource group name
-        export RESOURCE_GROUP="k8s-${File_Version}-$isolation-$(openssl rand -hex 3)"   
+        export RESOURCE_GROUP="k8s-120-$isolation-$(openssl rand -hex 3)"   
         export CONTAINER_NAME="k8yawangstest"        
         
         az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
