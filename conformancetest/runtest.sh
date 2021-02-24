@@ -44,7 +44,7 @@
 
         # Generate resource group name
         export RESOURCE_GROUP="k8s-${kubeversion//.}-$isolation-$(openssl rand -hex 3)"   
-        export CONTAINER_NAME= ${RESOURCE_GROUP}       
+        export CONTAINER_NAME=${RESOURCE_GROUP}       
         
         az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
 
