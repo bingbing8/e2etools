@@ -7,13 +7,16 @@ Param (
     [string] $PackageVersion,
 
     [Parameter(Mandatory = $true)]
+    [string] $KubernetesVersion,
+
+    [Parameter(Mandatory = $true)]
     [string] $AccountKey,
     
     [string] $AccountName = "cirruscontainerplat",
 
     [string] $ContainerName = "k8slog",
 
-    [string] $AgentVMSize = "Standard_D4s_V3",
+    [string] $AgentVMSize = "Standard_D2s_V3",
 
     [string] $AgentWindowsSku = "Datacenter-Core-2004-with-Containers-smalldisk",
 
@@ -63,6 +66,7 @@ $retObj = Get-ChildItem -Filter *junit_*.xml | ForEach-Object {
             'EndTimeStamp'    = $fileEndUtcTime
             'ScenarioName'    = $ScenarioName
             'PackageVersion'  = $PackageVersion
+            'KubernetesVersion' = $KubernetesVersion
             'AgentVMSize'     = $AgentVMSize
             'AgentWindowsSku' = $AgentWindowsSku
             'Name'            = $_.name
@@ -88,11 +92,9 @@ $retObj | ConvertTo-Csv -NoTypeInformation | Select-Object -Skip 1 | Set-Content
 az storage blob upload --account-name $AccountName --account-key $AccountKey --container-name $ContainerName --file $OutputFilePath --name $TableName
 $expiretime = (Get-Date).ToUniversalTime().AddMinutes(180).ToString("yyyy-MM-dTH:mZ")
 $sasurl = az storage blob generate-sas --account-name $AccountName --account-key $AccountKey --container-name $ContainerName --name $TableName --permission r --expiry $expiretime  --full-uri
-echo "##vso[task.setvariable variable=csvlogfileurl]$sasurl"
+Write-Output "##vso[task.setvariable variable=csvlogfileurl]$sasurl"
 Write-Host $sasurl
-Write-Host "total: $total"
+Write-Host "Total: $total"
 Write-Host "Unknown result: $($total-$passedNum-$failedNum-$skippedNum)"
-Write-Host "passed: $passedNum"
-Write-Host "failed: $failedNum"
-
-
+Write-Host "Passed: $passedNum"
+Write-Host "Failed: $failedNum"
