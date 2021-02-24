@@ -38,7 +38,7 @@ $retObj = Get-ChildItem -Filter *junit_*.xml | ForEach-Object {
     }
     $xmlObject = [xml](Get-Content -Path $filePath)
         
-    $xmlObject.testsuite.testcase | Where-Object { $_.skipped -eq '' -or $_.skipped -eq $null } |  ForEach-Object {
+    $xmlObject.testsuite.testcase | Where-Object { $_.skipped -eq $null } |  ForEach-Object {
         $status = 'Unknown'
         $failureType = $null
         $failureMessage = $null
