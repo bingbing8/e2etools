@@ -81,7 +81,8 @@
         export GINKGO_PARALLEL_NODES="2"
 
         GINKGO_SKIP="\\[LinuxOnly\\]|\\[Serial\\]|GMSA|Guestbook.application.should.create.and.stop.a.working.application"
-        GINKGO_FOCUS="should.run.with.the.expected.status.\\[NodeConformance\\]"
+        #GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
+        GINKGO_FOCUS="Container.Runtime.blackbox.test.when.starting.a.container.that.exits.should.run.with.the.expected.status.\\[NodeConformance\\].\\[Conformance\\]"
         
 
         set -x
