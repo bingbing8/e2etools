@@ -34,7 +34,7 @@
         tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
 
         export File_Version="${kubeversion//./_}"
-        cp "kubernetes_release_${File_Version}.json" aks-engine/kubernetes.json
+        cp "kubernetes.json" aks-engine/kubernetes.json
         pushd aks-engine
         export AKS_ENGINE_PATH="$(pwd)"
   
