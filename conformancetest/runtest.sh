@@ -46,7 +46,7 @@
         # Generate resource group name
         export RESOURCE_GROUP="k8s-120-$isolation-$(openssl rand -hex 3)"   
         export CONTAINER_NAME="k8yawangstest"        
-        
+        echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
         az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
 
         ./aks-engine deploy \
