@@ -27,6 +27,7 @@
         esac
         done
         set -x
+        set -e
         export Kubernetes_Version=$kubeversion
         # download aks-engine
         curl -sSLf https://aka.ms/ContainerPlatTest/aks-engine-linux-amd64.tar.gz > aks-engine.tar.gz
@@ -46,7 +47,7 @@
         export RESOURCE_GROUP="k8s-${kubeversion//.}-$isolation-$(openssl rand -hex 3)"   
         export CONTAINER_NAME=${RESOURCE_GROUP}       
         echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
-        
+
         az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
 
         ./aks-engine deploy \
