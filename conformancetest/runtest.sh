@@ -26,8 +26,7 @@
             ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
         esac
         done
-        set -x
-        set -e
+        set -eux -o pipefail
         export Kubernetes_Version=$kubeversion
         # download aks-engine
         curl -sSLf https://aka.ms/ContainerPlatTest/aks-engine-linux-amd64.tar.gz > aks-engine.tar.gz
