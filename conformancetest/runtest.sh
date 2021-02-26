@@ -40,9 +40,12 @@ cp kubernetes.json aks-engine/kubernetes.json
 pushd aks-engine
 export AKS_ENGINE_PATH="$(pwd)"
 
-# Generate SSH keypair
+# Generate SSH keypair, but not used it for now
 echo -e 'y\n' | ssh-keygen -f id_rsa -t rsa -N '' > /dev/null
-export SSH_PUBLIC_KEY="$(cat id_rsa.pub)"
+az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
+# use publid key from 
+scriptdir =`dirname "$BASH_SOURCE"`
+export SSH_PUBLIC_KEY="$(cat $scriptdir/rsapub.pub)"
 
 # Generate resource group name
 export RESOURCE_GROUP="k8s-${kubeversion//.}-$isolation-$(openssl rand -hex 3)"   
@@ -95,7 +98,6 @@ GINKGO_FOCUS="Container.Runtime.blackbox.test.when.starting.a.container.that.exi
 
 dir ${AKS_ENGINE_PATH}/logs
 az storage blob upload-batch --account-name cirruscontainerplat --account-key $storageaccountkey -d ${CONTAINER_NAME} -s  ${AKS_ENGINE_PATH}/logs
-az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
 
 az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
 az account set -s $subscriptionid
