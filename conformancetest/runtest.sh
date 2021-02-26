@@ -42,7 +42,7 @@ export AKS_ENGINE_PATH="$(pwd)"
 
 # Generate SSH keypair, but not used it for now
 echo -e 'y\n' | ssh-keygen -f id_rsa -t rsa -N '' > /dev/null
-az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
+
 # use publid key from 
 scriptdir =`dirname "$BASH_SOURCE"`
 export SSH_PUBLIC_KEY="$(cat $scriptdir/rsapub.pub)"
@@ -53,6 +53,7 @@ export CONTAINER_NAME=${RESOURCE_GROUP}
 echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
 
 az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
+az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
 
 ./aks-engine deploy \
   --dns-prefix ${RESOURCE_GROUP} \
