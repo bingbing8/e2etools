@@ -44,7 +44,7 @@ export AKS_ENGINE_PATH="$(pwd)"
 echo -e 'y\n' | ssh-keygen -f id_rsa -t rsa -N '' > /dev/null
 
 # use publid key from 
-scriptdir =`dirname "$BASH_SOURCE"`
+scriptdir =`dirname "${BASH_SOURCE}"`
 export SSH_PUBLIC_KEY="$(cat $scriptdir/rsapub.pub)"
 
 # Generate resource group name
