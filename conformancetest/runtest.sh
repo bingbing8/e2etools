@@ -45,7 +45,9 @@ echo -e 'y\n' | ssh-keygen -f id_rsa -t rsa -N '' > /dev/null
 
 # use publid key from 
 scriptdir =`dirname "${BASH_SOURCE}"`
-export SSH_PUBLIC_KEY="$(cat $scriptdir/rsapub.pub)"
+echo 'here'
+export SSH_PUBLIC_KEY="$(cat ${scriptdir}/rsapub.pub)"
+echo 'done'
 
 # Generate resource group name
 export RESOURCE_GROUP="k8s-${kubeversion//.}-$isolation-$(openssl rand -hex 3)"   
