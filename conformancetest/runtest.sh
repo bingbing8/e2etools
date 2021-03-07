@@ -56,6 +56,7 @@ echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
 
 az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
 az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
+az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file kubernetes.json --name kubernetes.json
 
 ./aks-engine deploy \
   --dns-prefix ${RESOURCE_GROUP} \
