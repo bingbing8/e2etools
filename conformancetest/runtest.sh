@@ -56,7 +56,6 @@ echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
 
 az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
 az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
-az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file kubernetes.json --name kubernetes.json
 
 ./aks-engine deploy \
   --dns-prefix ${RESOURCE_GROUP} \
@@ -65,7 +64,8 @@ az storage blob upload --account-name cirruscontainerplat --account-key $storage
   --location westus2 \
   --subscription-id $subscriptionid \
   --client-id $clientappid \
-  --client-secret $clientappsecret
+  --client-secret $clientappsecret \
+  
 
 export KUBECONFIG="$(pwd)/_output/${RESOURCE_GROUP}/kubeconfig/kubeconfig.westus2.json"
 
@@ -92,7 +92,7 @@ export GINKGO_PARALLEL_NODES="2"
 
 GINKGO_SKIP="\\[LinuxOnly\\]|\\[Serial\\]|GMSA|Guestbook.application.should.create.and.stop.a.working.application"
 #GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
-GINKGO_FOCUS="Container.Runtime.blackbox.test.when.starting.a.container.that.exits.should.run.with.the.expected.status.\\[NodeConformance\\].\\[Conformance\\]"
+GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.shared.volumes.between.containers.\\[Conformance\\]"
 
 ./hack/ginkgo-e2e.sh \
 '--provider=skeleton' \
