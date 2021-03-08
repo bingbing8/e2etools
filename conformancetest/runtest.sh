@@ -78,7 +78,7 @@ kubectl cluster-info
 mkdir ${AKS_ENGINE_PATH}/logs
 
 curl https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/images/image-repo-list -o repo_list
-KUBE_TEST_REPO_LIST="$(pwd)/repo_list"
+export KUBE_TEST_REPO_LIST="$(pwd)/repo_list"
 git clone https://github.com/kubernetes/kubernetes --branch "release-${Kubernetes_Version}" --single-branch kubernetes
 pushd kubernetes
 
@@ -90,9 +90,9 @@ make ginkgo
 export KUBERNETES_CONFORMANCE_TEST="y"
 export GINKGO_PARALLEL_NODES="2"
 
-GINKGO_SKIP="\\[LinuxOnly\\]|\\[Serial\\]|GMSA|Guestbook.application.should.create.and.stop.a.working.application"
-#GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
-GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.shared.volumes.between.containers.\\[Conformance\\]"
+export GINKGO_SKIP="\\[LinuxOnly\\]|\\[Serial\\]|GMSA|Guestbook.application.should.create.and.stop.a.working.application"
+#export GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
+export GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.shared.volumes.between.containers.\\[Conformance\\]"
 
 ./hack/ginkgo-e2e.sh \
 '--provider=skeleton' \
