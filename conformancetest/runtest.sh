@@ -76,6 +76,7 @@ kubectl get nodes -owide
 kubectl cluster-info
 
 mkdir ${AKS_ENGINE_PATH}/logs
+echo "##vso[task.setvariable variable=workingfolder]${AKS_ENGINE_PATH}"
 
 curl https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/images/image-repo-list -o repo_list
 export KUBE_TEST_REPO_LIST="$(pwd)/repo_list"

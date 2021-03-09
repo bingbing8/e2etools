@@ -11,6 +11,9 @@ Param (
 
     [Parameter(Mandatory = $true)]
     [string] $AccountKey,
+
+    [Parameter(Mandatory = $true)]
+    [string] $LogPath,
     
     [string] $AccountName = "cirruscontainerplat",
 
@@ -25,13 +28,11 @@ Param (
     [int] $TestInstance = 0
 )
 
-az storage blob download-batch -d $PSScriptRoot --pattern *.xml -s $ContainerName --account-name $AccountName --account-key $AccountKey
-
 $failedNum = 0
 $passedNum = 0
 $total = 0
 $retObj = @()
-$retObj = Get-ChildItem -Filter *junit_*.xml | ForEach-Object {
+$retObj = Get-ChildItem -Path $LogPath -Filter *junit_*.xml | ForEach-Object {
     $filePath = $_.FullName
     $fileStartUtcTime = (Get-item $filePath).CreationTimeUtc
     $fileEndUtcTime = (Get-item $filePath).LastWriteTimeUtc
@@ -82,20 +83,29 @@ $retObj = Get-ChildItem -Filter *junit_*.xml | ForEach-Object {
     }
 }
 
+Write-Host "Total: $total"
+Write-Host "Unknown result: $($total-$passedNum-$failedNum-$skippedNum)"
+Write-Host "Passed: $passedNum"
+Write-Host "Failed: $failedNum"
+
 $OutputFilePath = Join-Path $PSScriptRoot "$($TableName).csv"
 if (Test-Path $OutputFilePath -PathType Leaf) {
     Remove-Item $OutputFilePath -Force
 }
 
+Write-Host $OutputFilePath
+
 $retObj | ConvertTo-Csv -NoTypeInformation | Select-Object -Skip 1 | Set-Content $OutputFilePath
-Get-Item $OutputFilePath
+
+if (Test-Path $OutputFilePath -PathType Leaf) {
+    Get-Item $OutputFilePath
+}
+else {
+    Write-Host "the file doesn't exist"
+}
 
 az storage blob upload --account-name $AccountName --account-key $AccountKey --container-name $ContainerName --file $OutputFilePath --name $TableName
 $expiretime = (Get-Date).ToUniversalTime().AddMinutes(180).ToString("yyyy-MM-dTH:mZ")
 $sasurl = az storage blob generate-sas --account-name $AccountName --account-key $AccountKey --container-name $ContainerName --name $TableName --permission r --expiry $expiretime  --full-uri
 Write-Output "##vso[task.setvariable variable=csvlogfileurl]$sasurl"
 Write-Host $sasurl
-Write-Host "Total: $total"
-Write-Host "Unknown result: $($total-$passedNum-$failedNum-$skippedNum)"
-Write-Host "Passed: $passedNum"
-Write-Host "Failed: $failedNum"
