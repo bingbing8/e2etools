@@ -25,7 +25,7 @@ Param (
     [int] $TestInstance = 0
 )
 
-az storage blob download-batch -d . --pattern *.xml -s $ContainerName --account-name $AccountName --account-key $AccountKey
+az storage blob download-batch -d $PSScriptRoot --pattern *.xml -s $ContainerName --account-name $AccountName --account-key $AccountKey
 
 $failedNum = 0
 $passedNum = 0
@@ -41,7 +41,7 @@ $retObj = Get-ChildItem -Filter *junit_*.xml | ForEach-Object {
     }
     $xmlObject = [xml](Get-Content -Path $filePath)
         
-    $xmlObject.testsuite.testcase | Where-Object { $_.skipped -eq $null } |  ForEach-Object {
+    $xmlObject.testsuite.testcase | Where-Object { $null -eq $_.skipped } |  ForEach-Object {
         $status = 'Unknown'
         $failureType = $null
         $failureMessage = $null
@@ -82,10 +82,12 @@ $retObj = Get-ChildItem -Filter *junit_*.xml | ForEach-Object {
     }
 }
 
-$OutputFilePath = "$($TableName).csv"
+$OutputFilePath = Join-Path $PSScriptRoot "$($TableName).csv"
 if (Test-Path $OutputFilePath -PathType Leaf) {
     Remove-Item $OutputFilePath -Force
 }
+
+Get-Item $OutputFilePath
 
 $retObj | ConvertTo-Csv -NoTypeInformation | Select-Object -Skip 1 | Set-Content $OutputFilePath
       
