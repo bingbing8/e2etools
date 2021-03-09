@@ -25,7 +25,7 @@ Param (
     [int] $TestInstance = 0
 )
 Write-Host 'start'
-az storage blob download-batch -d . --pattern *.xml -s $ContainerName --account-name $AccountName --account-key $AccountKey
+#az storage blob download-batch -d . --pattern *.xml -s $ContainerName --account-name $AccountName --account-key $AccountKey
 Write-Host 'download files'
 $failedNum = 0
 $passedNum = 0
