@@ -12,9 +12,6 @@ Param (
     [Parameter(Mandatory = $true)]
     [string] $AccountKey,
 
-    [Parameter(Mandatory = $true)]
-    [string] $LogPath,
-    
     [string] $AccountName = "cirruscontainerplat",
 
     [string] $ContainerName = "k8slog",
@@ -28,11 +25,13 @@ Param (
     [int] $TestInstance = 0
 )
 
+az storage blob download-batch --pattern *.xml -s $ContainerName --account-name $AccountName --account-key $AccountKey
+
 $failedNum = 0
 $passedNum = 0
 $total = 0
 $retObj = @()
-$retObj = Get-ChildItem -Path $LogPath -Filter *junit_*.xml | ForEach-Object {
+$retObj = Get-ChildItem -Filter *junit_*.xml | ForEach-Object {
     $filePath = $_.FullName
     $fileStartUtcTime = (Get-item $filePath).CreationTimeUtc
     $fileEndUtcTime = (Get-item $filePath).LastWriteTimeUtc
@@ -88,7 +87,7 @@ Write-Host "Unknown result: $($total-$passedNum-$failedNum-$skippedNum)"
 Write-Host "Passed: $passedNum"
 Write-Host "Failed: $failedNum"
 
-$OutputFilePath = Join-Path $PSScriptRoot "$($TableName).csv"
+$OutputFilePath = "$($TableName).csv"
 if (Test-Path $OutputFilePath -PathType Leaf) {
     Remove-Item $OutputFilePath -Force
 }
