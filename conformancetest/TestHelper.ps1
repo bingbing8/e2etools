@@ -87,10 +87,9 @@ if (Test-Path $OutputFilePath -PathType Leaf) {
     Remove-Item $OutputFilePath -Force
 }
 
+$retObj | ConvertTo-Csv -NoTypeInformation | Select-Object -Skip 1 | Set-Content $OutputFilePath
 Get-Item $OutputFilePath
 
-$retObj | ConvertTo-Csv -NoTypeInformation | Select-Object -Skip 1 | Set-Content $OutputFilePath
-      
 az storage blob upload --account-name $AccountName --account-key $AccountKey --container-name $ContainerName --file $OutputFilePath --name $TableName
 $expiretime = (Get-Date).ToUniversalTime().AddMinutes(180).ToString("yyyy-MM-dTH:mZ")
 $sasurl = az storage blob generate-sas --account-name $AccountName --account-key $AccountKey --container-name $ContainerName --name $TableName --permission r --expiry $expiretime  --full-uri
