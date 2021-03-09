@@ -25,7 +25,7 @@ Param (
     [int] $TestInstance = 0
 )
 
-az storage blob download-batch --pattern *.xml -s $ContainerName --account-name $AccountName --account-key $AccountKey
+az storage blob download-batch -d . --pattern *.xml -s $ContainerName --account-name $AccountName --account-key $AccountKey
 
 $failedNum = 0
 $passedNum = 0
