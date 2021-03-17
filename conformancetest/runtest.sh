@@ -75,7 +75,7 @@ kubectl wait pod -n kube-system --for=condition=Ready --all
 kubectl get nodes -owide
 kubectl cluster-info
 
-az network public-ip list -g ${RESOURCE_GROUP} --output table
+# az network public-ip list -g ${RESOURCE_GROUP} --output table
 
 mkdir ${AKS_ENGINE_PATH}/logs
 echo "##vso[task.setvariable variable=workingfolder]${AKS_ENGINE_PATH}"
