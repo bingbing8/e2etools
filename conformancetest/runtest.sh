@@ -30,7 +30,7 @@ esac
 done
 set -eux -o pipefail
 export Kubernetes_Version=$kubeversion
-export OUT_FOLDER = "${BUILD_ARTIFACTSTAGINGDIRECTORY}"
+export OUT_FOLDER = "${BUILD_ARTIFACTSTAGINGDIRECTORY}/out"
 
 # download aks-engine
 curl -sSLf https://aka.ms/ContainerPlatTest/aks-engine-linux-amd64.tar.gz > aks-engine.tar.gz
@@ -52,7 +52,8 @@ export SSH_PUBLIC_KEY="$(cat ${scriptdir}/rsapub.pub)"
 export RESOURCE_GROUP="k8s-${kubeversion//.}-$isolation-$(openssl rand -hex 3)"   
 export CONTAINER_NAME=${RESOURCE_GROUP}       
 echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
-cp id_rsa ${OUT_FOLDER}/out
+cp id_rsa ${OUT_FOLDER}
+
 ./aks-engine deploy \
   --dns-prefix ${RESOURCE_GROUP} \
   --resource-group ${RESOURCE_GROUP} \
@@ -94,10 +95,10 @@ export GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.share
 ./hack/ginkgo-e2e.sh \
 '--provider=skeleton' \
 "--ginkgo.focus=${GINKGO_FOCUS}" "--ginkgo.skip=${GINKGO_SKIP}" \
-"--report-dir=${OUT_FOLDER}/out" \
+"--report-dir=${OUT_FOLDER}" \
 '--disable-log-dump=true' "--node-os-distro=windows"
 
-dir ${OUT_FOLDER}/out
+dir ${OUT_FOLDER}
 
 az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
 az account set -s $subscriptionid
