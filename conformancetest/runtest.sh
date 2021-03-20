@@ -30,7 +30,7 @@ esac
 done
 set -eux -o pipefail
 export Kubernetes_Version=$kubeversion
-export OUT_FOLDER = ${BUILD_ARTIFACTSTAGINGDIRECTORY}
+export OUT_FOLDER = "${BUILD_ARTIFACTSTAGINGDIRECTORY}"
 
 # download aks-engine
 curl -sSLf https://aka.ms/ContainerPlatTest/aks-engine-linux-amd64.tar.gz > aks-engine.tar.gz
