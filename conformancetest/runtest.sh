@@ -30,6 +30,8 @@ esac
 done
 set -eux -o pipefail
 export Kubernetes_Version=$kubeversion
+export OUT_FOLDER = "$(Build.ArtifactStagingDirectory)/out"
+
 # download aks-engine
 curl -sSLf https://aka.ms/ContainerPlatTest/aks-engine-linux-amd64.tar.gz > aks-engine.tar.gz
 mkdir -p aks-engine
@@ -38,25 +40,19 @@ tar -zxvf aks-engine.tar.gz -C aks-engine --strip 1
 export File_Version="${kubeversion//./_}"
 cp kubernetes.json aks-engine/kubernetes.json
 pushd aks-engine
-export AKS_ENGINE_PATH="$(pwd)"
 
 # Generate SSH keypair, but not used it for now
 echo -e 'y\n' | ssh-keygen -f id_rsa -t rsa -N '' > /dev/null
 
 # use publid key from 
 scriptdir=`dirname "${BASH_SOURCE}"`
-echo 'here'
 export SSH_PUBLIC_KEY="$(cat ${scriptdir}/rsapub.pub)"
-echo 'done'
 
 # Generate resource group name
 export RESOURCE_GROUP="k8s-${kubeversion//.}-$isolation-$(openssl rand -hex 3)"   
 export CONTAINER_NAME=${RESOURCE_GROUP}       
 echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
-
-az storage container create -n ${CONTAINER_NAME} --account-name cirruscontainerplat --account-key $storageaccountkey
-az storage blob upload --account-name cirruscontainerplat --account-key $storageaccountkey --container-name ${CONTAINER_NAME} --file ${AKS_ENGINE_PATH}/id_rsa --name id_rsa
-
+cp id_rsa ${OUT_FOLDER}
 ./aks-engine deploy \
   --dns-prefix ${RESOURCE_GROUP} \
   --resource-group ${RESOURCE_GROUP} \
@@ -77,9 +73,6 @@ kubectl cluster-info
 
 # az network public-ip list -g ${RESOURCE_GROUP} --output table
 
-mkdir ${AKS_ENGINE_PATH}/logs
-echo "##vso[task.setvariable variable=workingfolder]${AKS_ENGINE_PATH}"
-
 curl https://raw.githubusercontent.com/kubernetes-sigs/windows-testing/master/images/image-repo-list -o repo_list
 export KUBE_TEST_REPO_LIST="$(pwd)/repo_list"
 git clone https://github.com/kubernetes/kubernetes --branch "release-${Kubernetes_Version}" --single-branch kubernetes
@@ -94,17 +87,17 @@ export KUBERNETES_CONFORMANCE_TEST="y"
 export GINKGO_PARALLEL_NODES="2"
 
 export GINKGO_SKIP="\\[LinuxOnly\\]|\\[Serial\\]|GMSA|Guestbook.application.should.create.and.stop.a.working.application"
-export GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
-#export GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.shared.volumes.between.containers.\\[Conformance\\]"
+#export GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
+export GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.shared.volumes.between.containers.\\[Conformance\\]"
+
 
 ./hack/ginkgo-e2e.sh \
 '--provider=skeleton' \
 "--ginkgo.focus=${GINKGO_FOCUS}" "--ginkgo.skip=${GINKGO_SKIP}" \
-"--report-dir=${AKS_ENGINE_PATH}/logs" \
+"--report-dir=${OUT_FOLDER}" \
 '--disable-log-dump=true' "--node-os-distro=windows"
 
-dir ${AKS_ENGINE_PATH}/logs
-az storage blob upload-batch --account-name cirruscontainerplat --account-key $storageaccountkey -d ${CONTAINER_NAME} -s  ${AKS_ENGINE_PATH}/logs
+dir ${OUT_FOLDER}
 
 az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
 az account set -s $subscriptionid
