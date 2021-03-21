@@ -50,8 +50,8 @@ export SSH_PUBLIC_KEY="$(cat ${scriptdir}/rsapub.pub)"
 
 # Generate resource group name
 export RESOURCE_GROUP="k8s-${kubeversion//.}-$isolation-$(openssl rand -hex 3)"   
-export CONTAINER_NAME=${RESOURCE_GROUP}       
-echo "##vso[task.setvariable variable=logcontainername]${CONTAINER_NAME}"
+    
+echo "##vso[task.setvariable variable=logcontainername]${RESOURCE_GROUP}"
 cp id_rsa ${OUT_FOLDER}
 
 ./aks-engine deploy \
@@ -88,8 +88,8 @@ export KUBERNETES_CONFORMANCE_TEST="y"
 export GINKGO_PARALLEL_NODES="2"
 
 export GINKGO_SKIP="\\[LinuxOnly\\]|\\[Serial\\]|GMSA|Guestbook.application.should.create.and.stop.a.working.application"
-#export GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
-export GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.shared.volumes.between.containers.\\[Conformance\\]"
+export GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
+#export GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.shared.volumes.between.containers.\\[Conformance\\]"
 
 
 ./hack/ginkgo-e2e.sh \
