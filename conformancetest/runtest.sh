@@ -102,4 +102,5 @@ dir ${OUT_FOLDER}
 
 az login -u $clientappid -p $clientappsecret --service-principal --tenant $tenantid > /dev/null
 az account set -s $subscriptionid
+az network public-ip list -g ${RESOURCE_GROUP} --output table
 az group delete --name ${RESOURCE_GROUP} --yes --no-wait || true
