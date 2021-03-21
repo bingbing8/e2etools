@@ -88,8 +88,8 @@ export KUBERNETES_CONFORMANCE_TEST="y"
 export GINKGO_PARALLEL_NODES="2"
 
 export GINKGO_SKIP="\\[LinuxOnly\\]|\\[Serial\\]|GMSA|Guestbook.application.should.create.and.stop.a.working.application"
-export GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
-#export GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.shared.volumes.between.containers.\\[Conformance\\]"
+#export GINKGO_FOCUS="\\[Conformance\\]|\\[NodeConformance\\]|\\[sig-windows\\]|\\[sig-apps\\].CronJob|\\[sig-api-machinery\\].ResourceQuota|\\[sig-scheduling\\].SchedulerPreemption|\\[sig-autoscaling\\].\\[Feature:HPA\\]"
+export GINKGO_FOCUS="\\[sig-storage\\].EmptyDir.volumes.pod.should.support.shared.volumes.between.containers.\\[Conformance\\]"
 
 
 ./hack/ginkgo-e2e.sh \
